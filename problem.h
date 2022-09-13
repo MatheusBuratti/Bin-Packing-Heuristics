@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 
 #ifndef PROBLEMH
 #define PROBLEMH
@@ -8,7 +9,7 @@ typedef struct Problem{
     int binCapacity;
     int n;
     int bestSolution;
-    int *items;
+    std::vector<int> items;
 }Problem;
 
 #endif // !PROBLEMH

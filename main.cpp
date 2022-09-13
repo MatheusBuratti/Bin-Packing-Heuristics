@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include "problem.h"
 #include "greedy.cpp"
@@ -15,23 +16,35 @@ int main(void){
     // ---------- LEITURA DA ENTRADA ----------
     int NoP;
     std::cin >> NoP;
-    Problem *problems = new Problem[NoP];
+    std::vector<Problem> problems;
     for(int j=0; j<NoP; j++){
-        std::cin >> problems[j].identifier;
-        std::cin >> problems[j].binCapacity;
-        std::cin >> problems[j].n;
-        std::cin >> problems[j].bestSolution;
-        problems[j].items = new int[problems[j].n];
-        for(int i=0; i<problems[j].n; i++){
-            std::cin >> problems[j].items[i];
+        Problem P;
+        std::cin >> P.identifier;
+        std::cin >> P.binCapacity;
+        std::cin >> P.n;
+        std::cin >> P.bestSolution;
+        for(int i=0; i<P.n; i++){
+            int item;
+            std::cin >> item;
+            P.items.push_back(item);
         }
+        // Organiza o vetor
+        std::sort(P.items.begin(), P.items.end(), std::greater<int>());
+
+        problems.push_back(P);
     }
-    std::vector<int> greedySolution = greedySolver(problems[0]);
-    for(auto i = greedySolution.begin(); i != greedySolution.end(); i++){
-        std::cout << *i << ' ';
+
+    std::vector<std::vector<int>> fastGreedySolution, searchGreedySolution;
+    
+    for(auto it = problems.begin(); it != problems.end(); it++){
+        fastGreedySolution.push_back(fastGreedySolver(*it));
+        searchGreedySolution.push_back(searchGreedySolver(*it));
+
+        //Print temporário:
+        std::cout << "Problem identifier: " << it->identifier << std::endl;
+        std::cout << "Fast greedy solution: " << (fastGreedySolution.end()-1)->size() << std::endl;
+        std::cout << "Search greedy solution: " << (searchGreedySolution.end()-1)->size() << std::endl;
+        std::cout << "Best solution: " << it->bestSolution << std::endl << "=============================" << std::endl;
     }
-    std::cout << std::endl << std::endl;
-    std::cout << "Solution: " << greedySolution.size() << std::endl;
-    std::cout << "Best Sol: " << problems[0].bestSolution << std::endl;
     return 0;
 }
