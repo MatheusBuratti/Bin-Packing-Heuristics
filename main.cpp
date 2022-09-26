@@ -53,13 +53,12 @@ int main(int argc, char *argv[]) {
         std::vector<Solution> nextFitDecreasing;
 
         for (auto it = problems.begin(); it != problems.end(); it++) {
-            nextFitDecreasing.push_back(GreedySolver::nextFitDecreasing(*it));
+            nextFitDecreasing.push_back(Greedy::nextFitDecreasing(*it));
 
             // Print temporário:
             std::cout << "Problem identifier: " << it->identifier << std::endl;
-            std::cout << "FFD greedy solution: " << (nextFitDecreasing.end() - 1)->bins.size() << std::endl;
+            std::cout << "NFD greedy solution: " << (nextFitDecreasing.end() - 1)->bins.size() << std::endl;
             std::cout << "Best solution: " << it->bestSolution << std::endl
-                      << it->n << std::endl
                       << "=============================" << std::endl;
         }
     }
