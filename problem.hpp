@@ -12,8 +12,19 @@ struct Problem {
     std::vector<int> items;  // Items
 };
 
+struct ItemSol {
+    int weight;
+    int bin_index;
+};
+
+struct greaterItemSol {
+    inline bool operator()(const ItemSol A, const ItemSol B) {
+        return (A.weight > B.weight);
+    }
+};
+
 struct Solution {
-    std::vector<int> bins_index;  // bins_index_i = ponteiro para bins_j onde item_i foi colocado
+    std::vector<ItemSol> item;  // bins_index_i = índice j de bins_j onde item_i foi colocado
     std::vector<int> bins;
 };
 

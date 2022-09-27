@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "greedy.cpp"
+#include "localSearch.cpp"
 #include "problem.hpp"
 
 /* ========== TODO ==========
@@ -29,9 +30,6 @@ int main(int argc, char *argv[]) {
                     std::cin >> item;
                     P.items.push_back(item);
                 }
-                // Organiza o vetor
-                std::sort(P.items.begin(), P.items.end(), std::greater<int>());
-
                 problems.push_back(P);
             }
         } else if (OPT == "S") {
@@ -50,14 +48,17 @@ int main(int argc, char *argv[]) {
             std::cout << "Input error" << std::endl;
             return 0;
         }
-        std::vector<Solution> nextFitDecreasing;
+        std::vector<Solution> nextFitDecreasing, localSearch;
 
         for (auto it = problems.begin(); it != problems.end(); it++) {
-            nextFitDecreasing.push_back(Greedy::nextFitDecreasing(*it));
+            Solution greedySol = Greedy::nextFitDecreasing(*it);
+            nextFitDecreasing.push_back(greedySol);
+            localSearch.push_back(LocalSearch::reconstructBins(*it, greedySol));
 
             // Print temporário:
             std::cout << "Problem identifier: " << it->identifier << std::endl;
             std::cout << "NFD greedy solution: " << (nextFitDecreasing.end() - 1)->bins.size() << std::endl;
+            std::cout << "Local Search solution: " << (localSearch.end() - 1)->bins.size() << std::endl;
             std::cout << "Best solution: " << it->bestSolution << std::endl
                       << "=============================" << std::endl;
         }
