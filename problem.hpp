@@ -1,8 +1,7 @@
+#pragma once
+#include <list>
 #include <string>
 #include <vector>
-
-#ifndef PROBLEMH
-#define PROBLEMH
 
 struct Problem {
     std::string identifier;  // Identificador do problema
@@ -12,20 +11,25 @@ struct Problem {
     std::vector<int> items;  // Items
 };
 
-struct ItemSol {
+struct ItemSolution {
     int weight;
-    int bin_index;
+    std::list<int>::iterator bin_index;  // bins_index_i = índice j de bins_j onde item_i foi colocado
 };
 
-struct greaterItemSol {
-    inline bool operator()(const ItemSol A, const ItemSol B) {
+struct greaterItemSolution {  // Retorna o item com maior peso
+    inline bool operator()(const ItemSolution A, const ItemSolution B) {
         return (A.weight > B.weight);
     }
 };
 
 struct Solution {
-    std::vector<ItemSol> item;  // bins_index_i = índice j de bins_j onde item_i foi colocado
-    std::vector<int> bins;
+    std::vector<ItemSolution> item;
+    std::list<int> bins;
+    Solution(Problem P) {  // Construtor da solução
+        item.resize(P.n);
+        for (std::vector<int>::iterator it = P.items.begin(); it != P.items.end(); it++) {
+            item[it - P.items.begin()].weight = *it;            // cópia dos items, vai ajudar mais tarde quando for fazer trocas
+            item[it - P.items.begin()].bin_index = bins.end();  // bins.end() é flag para item que não foi colocado em nenhuma bin
+        }
+    }
 };
-
-#endif  // !PROBLEMH

@@ -5,45 +5,48 @@
 
 #include "greedy.cpp"
 #include "problem.hpp"
+
 class LocalSearch {
    public:
-    static Solution reconstructBins(Problem P, Solution startSol) {
-        // Pegando parte final do vetor de items (tamanho aleatório)
+    static Solution reconstructBins(Problem P, Solution startSolution) {
+        // Pegando parte final do vetor de items de tamanho aleatório
         srand((unsigned)time(0));
-        int N = (rand() % (P.n * 3 / 4)) + P.n / 4;  // vai reconstruir de N até o fim
+        int N = (rand() % P.n / 2) + P.n / 2;  // vai reconstruir de N até o fim
 
         // Removendo os items das bins
-        std::vector<ItemSol>::iterator it_items = startSol.item.begin();
-        for (std::advance(it_items, N); it_items != startSol.item.end(); it_items++) {
-            startSol.bins.at(it_items->bin_index) -= it_items->weight;
-            it_items->bin_index = -1;
+        std::vector<ItemSolution>::iterator it_items = startSolution.item.begin();
+        for (it_items += N; it_items != startSolution.item.end(); it_items++) {
+            if (*(it_items->bin_index) == it_items->weight)     // Se for o último item da bin
+                startSolution.bins.erase(it_items->bin_index);  // Remove a bin
+            else
+                *(it_items->bin_index) -= it_items->weight;
+            it_items->bin_index = startSolution.bins.end();  // Flag para item não alocado a uma bin
         }
 
         // Agora aplicando a estratégia de Best Fit
-        it_items = startSol.item.begin();
-        for (std::advance(it_items, N); it_items != startSol.item.end(); it_items++) {
-            std::vector<int>::iterator bestFit = startSol.bins.end();
-            for (std::vector<int>::iterator it_bins = startSol.bins.begin(); it_bins != startSol.bins.end(); it_bins++) {
-                if ((P.n - *it_bins) > it_items->weight) {                        // Se o espaço na bin cabe o item
-                    if (bestFit == startSol.bins.end() || *it_bins > *bestFit) {  // Se a bin estiver mais cheia
-                        bestFit = it_bins;
-                    }
-                }
+        it_items = startSolution.item.begin();
+        for (it_items += N; it_items != startSolution.item.end(); it_items++) {
+            std::list<int>::iterator bestFit = startSolution.bins.end();
+            for (std::list<int>::iterator it_bins = startSolution.bins.begin(); it_bins != startSolution.bins.end(); it_bins++) {
+                // Se o espaço na bin cabe o item e (se a bin estiver mais cheia ou for a primeira que cabe)
+                if ((P.n - *it_bins) >= it_items->weight && (bestFit == startSolution.bins.end() || *it_bins > *bestFit))
+                    bestFit = it_bins;
             }
-            if (bestFit == startSol.bins.end()) {  // Caso não tenha nenhuma bin que caiba o item cria uma nova
-                startSol.bins.push_back(it_items->weight);
-                it_items->bin_index = startSol.bins.end() - startSol.bins.begin() - 1;
+            if (bestFit == startSolution.bins.end()) {  // Caso não tenha nenhuma bin que caiba o item cria uma nova
+                startSolution.bins.push_back(it_items->weight);
+                it_items->bin_index = std::prev(startSolution.bins.end());
             } else {  // Caso encontre o bestFit, adiciona o item a essa bin
                 *bestFit += it_items->weight;
-                it_items->bin_index = bestFit - startSol.bins.begin();
+                it_items->bin_index = bestFit;
             }
         }
-        return startSol;
+        return startSolution;
     }
 
     /*
          Fitness eq1. [Hyde(2010)]:
          Fitness = 1 - sum((fullness/capacity)²)/numbins
+         AINDA NÃO É USADO PRA NADA
     */
     static int _calcFitness(Problem P, Solution S) {
         int result = 0;
