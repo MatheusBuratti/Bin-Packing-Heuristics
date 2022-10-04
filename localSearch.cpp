@@ -6,13 +6,18 @@
 #include "greedy.cpp"
 #include "problem.hpp"
 
+/*
+    TODO:
+    - bugadasso, era pra ta diminuido quantidade de bins mas não ta.
+        E pior, se der um clear (que já coloquei inclusive)
+        ele não recria a solução do 0, só retorna bins vazio
+ */
 class LocalSearch {
    public:
     static Solution reconstructBins(Problem P, Solution startSolution) {
         // Pegando parte final do vetor de items de tamanho aleatório
         srand((unsigned)time(0));
-        int N = (rand() % P.n / 2) + P.n / 2;  // vai reconstruir de N até o fim
-
+        int N = (rand() % (P.n * 1 / 10)) + P.n * 9 / 10;  // vai reconstruir de N até o fim
         // Removendo os items das bins
         std::vector<ItemSolution>::iterator it_items = startSolution.item.begin();
         for (it_items += N; it_items != startSolution.item.end(); it_items++) {
@@ -22,7 +27,6 @@ class LocalSearch {
                 *(it_items->bin_index) -= it_items->weight;
             it_items->bin_index = startSolution.bins.end();  // Flag para item não alocado a uma bin
         }
-
         // Agora aplicando a estratégia de Best Fit
         it_items = startSolution.item.begin();
         for (it_items += N; it_items != startSolution.item.end(); it_items++) {
@@ -32,7 +36,7 @@ class LocalSearch {
                 if ((P.n - *it_bins) >= it_items->weight && (bestFit == startSolution.bins.end() || *it_bins > *bestFit))
                     bestFit = it_bins;
             }
-            if (bestFit == startSolution.bins.end()) {  // Caso não tenha nenhuma bin que caiba o item cria uma nova
+            if (bestFit == startSolution.bins.end()) {  // Caso não tenha nenhuma bin que caiba o item, cria uma nova
                 startSolution.bins.push_back(it_items->weight);
                 it_items->bin_index = std::prev(startSolution.bins.end());
             } else {  // Caso encontre o bestFit, adiciona o item a essa bin

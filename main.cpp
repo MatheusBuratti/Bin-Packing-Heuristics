@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
         // ---------- LEITURA DA ENTRADA ----------
         std::string OPT = argv[1];
         std::vector<Problem> problems;
-        if (OPT == "J") {
+        if (OPT == "F") {
             int NoP;
             std::cin >> NoP;
             for (int j = 0; j < NoP; j++) {
