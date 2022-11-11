@@ -6,11 +6,6 @@
 #include "localSearch.cpp"
 #include "problem.hpp"
 
-/* ========== TODO ==========
-**
-** ==========================
-*/
-
 int main(int argc, char *argv[]) {
     if (argc > 1) {
         // ---------- LEITURA DA ENTRADA ----------
@@ -28,7 +23,7 @@ int main(int argc, char *argv[]) {
                 for (int i = 0; i < P.n; i++) {
                     int item;
                     std::cin >> item;
-                    P.items.push_back(item);
+                    P.items_weights.push_back(item);
                 }
                 problems.push_back(P);
             }
@@ -41,28 +36,27 @@ int main(int argc, char *argv[]) {
             for (int i = 0; i < P.n; i++) {
                 int item;
                 std::cin >> item;
-                P.items.push_back(item);
+                P.items_weights.push_back(item);
             }
             problems.push_back(P);
         } else {
             std::cout << "Input error" << std::endl;
             return 0;
         }
-        std::vector<Solution> nextFit, nextFitDecreasing, localSearch1, localSearch2;
 
         for (auto it = problems.begin(); it != problems.end(); it++) {
             Solution naiveFit = Greedy::naiveFit(*it);
-            Solution simpleFit = Greedy::simpleFit(*it);
+            Solution simpleFit = Greedy::nextFit(*it);
             Solution nextFitDec = Greedy::nextFitDecreasing(*it);
 
             // Print temporário:
             std::cout << "Problem identifier: " << it->identifier << std::endl;
-            std::cout << "Naive solution: " << naiveFit.bins.size() << std::endl;
-            std::cout << "Local Search Naive: " << LocalSearch::reconstructBins(*it, naiveFit).bins.size() << std::endl;
-            std::cout << "NF Solution: " << simpleFit.bins.size() << std::endl;
-            std::cout << "Local Search NF: " << LocalSearch::reconstructBins(*it, simpleFit).bins.size() << std::endl;
-            std::cout << "NFD greedy solution: " << nextFitDec.bins.size() << std::endl;
-            std::cout << "Local Search NFD: " << LocalSearch::reconstructBins(*it, nextFitDec).bins.size() << std::endl;
+            std::cout << "Naive solution: " << naiveFit.bins_list.size() << std::endl;
+            std::cout << "Local Search Naive: " << LocalSearch::reconstructBins(*it, naiveFit).bins_list.size() << std::endl;
+            std::cout << "NF Solution: " << simpleFit.bins_list.size() << std::endl;
+            std::cout << "Local Search NF: " << LocalSearch::reconstructBins(*it, simpleFit).bins_list.size() << std::endl;
+            std::cout << "NFD greedy solution: " << nextFitDec.bins_list.size() << std::endl;
+            std::cout << "Local Search NFD: " << LocalSearch::reconstructBins(*it, nextFitDec).bins_list.size() << std::endl;
             std::cout << "Best solution: " << it->bestSolution << std::endl
                       << "=============================" << std::endl;
         }

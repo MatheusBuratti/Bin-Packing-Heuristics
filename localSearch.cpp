@@ -6,42 +6,59 @@
 #include "greedy.cpp"
 #include "problem.hpp"
 
-/*
-    TODO:
-    - bugadasso, era pra ta diminuido quantidade de bins mas não ta.
-        E pior, se der um clear (que já coloquei inclusive)
-        ele não recria a solução do 0, só retorna bins vazio
- */
 class LocalSearch {
    public:
+    //  Swaps baseados em Kok-HuaLoh, Bruce Golden, Edward Wasil [2006]
+    static bool _swap10(Problem P, Solution &S, item A0, int B0_index) {
+        return true;
+    }
+    static bool _swap11(Problem P, Solution &S, item A0, item B0) {
+        return true;
+    }
+    static bool _swap12(Problem P, Solution &S, item A0, item B0, item B1) {
+        return true;
+    }
+    static bool _swap22(Problem P, Solution &S, item A0, item A1, item B0, item B1) {
+        return true;
+    }
+
+    static Solution HillDescent(Problem P, Solution startSolution) {
+        // Tenta fazer swaps em todos os pares de items baseado no ganho de fitness
+        // Lembrando que a ideia é minimizar fitness -> delta_fitness < 0
+        return startSolution;
+    }
+
     static Solution reconstructBins(Problem P, Solution startSolution) {
         // Pegando parte final do vetor de items de tamanho aleatório
         srand((unsigned)time(0));
-        int N = (rand() % (P.n * 1 / 10)) + P.n * 9 / 10;  // vai reconstruir de N até o fim
-        // Removendo os items das bins
-        std::vector<ItemSolution>::iterator it_items = startSolution.item.begin();
-        for (it_items += N; it_items != startSolution.item.end(); it_items++) {
-            if (*(it_items->bin_index) == it_items->weight)     // Se for o último item da bin
-                startSolution.bins.erase(it_items->bin_index);  // Remove a bin
+
+        int N = (rand() % (P.n * 1 / 4)) + P.n * 3 / 4;  // vai reconstruir de N até o fim
+
+        // Removendo os items das ultimas N bins
+        std::vector<item>::iterator it_items = startSolution.items_vector.begin();
+        for (it_items += N; it_items != startSolution.items_vector.end(); it_items++) {
+            if (it_items->assignedBin->fullness == it_items->weight)   // Se for o último item da bin
+                startSolution.bins_list.erase(it_items->assignedBin);  // Remove a bin
             else
-                *(it_items->bin_index) -= it_items->weight;
-            it_items->bin_index = startSolution.bins.end();  // Flag para item não alocado a uma bin
+                it_items->assignedBin->rmItem(it_items);
+            it_items->assignedBin = startSolution.bins_list.end();  // Flag para item não alocado a uma bin
         }
+
         // Agora aplicando a estratégia de Best Fit
-        it_items = startSolution.item.begin();
-        for (it_items += N; it_items != startSolution.item.end(); it_items++) {
-            std::list<int>::iterator bestFit = startSolution.bins.end();
-            for (std::list<int>::iterator it_bins = startSolution.bins.begin(); it_bins != startSolution.bins.end(); it_bins++) {
+        it_items = startSolution.items_vector.begin();
+        for (it_items += N; it_items != startSolution.items_vector.end(); it_items++) {
+            std::list<bin>::iterator bestFit = startSolution.bins_list.end();
+            for (std::list<bin>::iterator it_bins = startSolution.bins_list.begin(); it_bins != startSolution.bins_list.end(); it_bins++) {
                 // Se o espaço na bin cabe o item e (se a bin estiver mais cheia ou for a primeira que cabe)
-                if ((P.n - *it_bins) >= it_items->weight && (bestFit == startSolution.bins.end() || *it_bins > *bestFit))
+                if ((P.binCapacity - it_bins->fullness) >= it_items->weight && (bestFit == startSolution.bins_list.end() || it_bins->fullness > bestFit->fullness))
                     bestFit = it_bins;
             }
-            if (bestFit == startSolution.bins.end()) {  // Caso não tenha nenhuma bin que caiba o item, cria uma nova
-                startSolution.bins.push_back(it_items->weight);
-                it_items->bin_index = std::prev(startSolution.bins.end());
+            if (bestFit == startSolution.bins_list.end()) {  // Caso não tenha nenhuma bin que caiba o item, cria uma nova
+                startSolution.bins_list.push_back(bin(it_items));
+                it_items->assignedBin = std::prev(startSolution.bins_list.end());
             } else {  // Caso encontre o bestFit, adiciona o item a essa bin
-                *bestFit += it_items->weight;
-                it_items->bin_index = bestFit;
+                bestFit->addItem(it_items);
+                it_items->assignedBin = bestFit;
             }
         }
         return startSolution;
@@ -50,14 +67,26 @@ class LocalSearch {
     /*
          Fitness eq1. [Hyde(2010)]:
          Fitness = 1 - sum((fullness/capacity)²)/numbins
-         AINDA NÃO É USADO PRA NADA
     */
     static int _calcFitness(Problem P, Solution S) {
         int result = 0;
-        for (auto it = S.bins.begin(); it != S.bins.end(); it++) {
-            result += (*it / P.binCapacity) * (*it / P.binCapacity);  // (fullness/capacity)²
+        for (auto it = S.bins_list.begin(); it != S.bins_list.end(); it++) {
+            result += it->fullness * it->fullness / (P.binCapacity * P.binCapacity);  // (fullness/capacity)²
         }
-        result /= S.bins.size();  //    sum/numbins
+        result /= S.bins_list.size();  //    sum/numbins
         return (1 - result);
+    }
+
+    static int _deltaFitness(Problem P, Solution S, item A0, int B0_index) {
+        return 0;
+    }
+    static int _deltaFitness(Problem P, Solution S, item A0, item B0) {
+        return 0;
+    }
+    static int _deltaFitness(Problem P, Solution S, item A0, item B0, item B1) {
+        return 0;
+    }
+    static int _deltaFitness(Problem P, Solution S, int binA, int binB) {
+        return 0;
     }
 };
