@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -13,6 +14,7 @@
 */
 
 int main(int argc, char *argv[]) {
+    std::chrono::steady_clock::time_point begin, end;
     // Multiple Inputs
     if (argc > 1) {
         // ---------- LEITURA DA ENTRADA ----------
@@ -54,18 +56,30 @@ int main(int argc, char *argv[]) {
         for (auto it = problems.begin(); it != problems.end(); it++) {
             // Print temporário:
             std::cout << "Problem identifier: " << it->identifier << std::endl;
+            begin = std::chrono::steady_clock::now();
             Solution Sol = Greedy::nextFit(*it);
-            std::cout << "NF Solution: " << Sol.bins_list.size() << std::endl;
+            end = std::chrono::steady_clock::now();
+            std::cout << "NF Solution: " << Sol.bins_list.size() << " Time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+            begin = std::chrono::steady_clock::now();
             Sol = Greedy::nextFit(*it);
-            std::cout << "HillClimb NF: " << LocalSearch::HillClimb(*it, Sol).bins_list.size() << std::endl;
+            end = std::chrono::steady_clock::now();
+            std::cout << "HillClimb NF: " << LocalSearch::HillClimb(*it, Sol).bins_list.size() << " Time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+            begin = std::chrono::steady_clock::now();
             Sol = Greedy::nextFit(*it);
-            std::cout << "Annealing NF: " << Metaheuristics::WeightAnnealing(*it, Sol).bins_list.size() << std::endl;
+            end = std::chrono::steady_clock::now();
+            std::cout << "Annealing NF: " << Metaheuristics::WeightAnnealing(*it, Sol).bins_list.size() << " Time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+            begin = std::chrono::steady_clock::now();
             Sol = Greedy::nextFitDecreasing(*it);
-            std::cout << "NFD greedy solution: " << Sol.bins_list.size() << std::endl;
-            Sol = Greedy::nextFit(*it);
-            std::cout << "HillClimb NFD: " << LocalSearch::HillClimb(*it, Sol).bins_list.size() << std::endl;
-            Sol = Greedy::nextFit(*it);
-            std::cout << "Annealing NFD: " << Metaheuristics::WeightAnnealing(*it, Sol).bins_list.size() << std::endl;
+            end = std::chrono::steady_clock::now();
+            std::cout << "NFD greedy solution: " << Sol.bins_list.size() << " Time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+            begin = std::chrono::steady_clock::now();
+            Sol = Greedy::nextFitDecreasing(*it);
+            end = std::chrono::steady_clock::now();
+            std::cout << "HillClimb NFD: " << LocalSearch::HillClimb(*it, Sol).bins_list.size() << " Time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+            begin = std::chrono::steady_clock::now();
+            Sol = Greedy::nextFitDecreasing(*it);
+            end = std::chrono::steady_clock::now();
+            std::cout << "Annealing NFD: " << Metaheuristics::WeightAnnealing(*it, Sol).bins_list.size() << " Time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
             std::cout << "Best solution: " << it->bestSolution << std::endl
                       << "=============================" << std::endl;
         }
@@ -81,19 +95,36 @@ int main(int argc, char *argv[]) {
             P.items_weights.push_back(item);
         }
         // Print temporário:
+        // Print temporário:
         std::cout << "Problem identifier: " << P.identifier << std::endl;
+        begin = std::chrono::steady_clock::now();
         Solution Sol = Greedy::nextFit(P);
-        std::cout << "NF Solution: " << Sol.bins_list.size() << std::endl;
-        Sol = Greedy::nextFit(P);
-        std::cout << "HillClimb NF: " << LocalSearch::HillClimb(P, Sol).bins_list.size() << std::endl;
-        Sol = Greedy::nextFit(P);
-        std::cout << "Annealing NF: " << Metaheuristics::WeightAnnealing(P, Sol).bins_list.size() << std::endl;
+        end = std::chrono::steady_clock::now();
+        std::cout << "NF Solution: " << Sol.bins_list.size() << " Time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+        // begin = std::chrono::steady_clock::now();
+        // Sol = Greedy::nextFit(P);
+        // Sol = LocalSearch::HillClimb(P, Sol);
+        // end = std::chrono::steady_clock::now();
+        // std::cout << "HillClimb NF: " << Sol.bins_list.size() << " Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+        // begin = std::chrono::steady_clock::now();
+        // Sol = Greedy::nextFit(P);
+        // Sol = Metaheuristics::WeightAnnealing(P, Sol);
+        // end = std::chrono::steady_clock::now();
+        // std::cout << "Annealing NF: " << Sol.bins_list.size() << " Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+        begin = std::chrono::steady_clock::now();
         Sol = Greedy::nextFitDecreasing(P);
-        std::cout << "NFD greedy solution: " << Sol.bins_list.size() << std::endl;
+        end = std::chrono::steady_clock::now();
+        std::cout << "NFD greedy solution: " << Sol.bins_list.size() << " Time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+        begin = std::chrono::steady_clock::now();
         Sol = Greedy::nextFitDecreasing(P);
-        std::cout << "HillClimb NFD: " << LocalSearch::HillClimb(P, Sol).bins_list.size() << std::endl;
+        Sol = LocalSearch::HillClimb(P, Sol);
+        end = std::chrono::steady_clock::now();
+        std::cout << "HillClimb NFD: " << Sol.bins_list.size() << " Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+        begin = std::chrono::steady_clock::now();
         Sol = Greedy::nextFitDecreasing(P);
-        std::cout << "Annealing NFD: " << Metaheuristics::WeightAnnealing(P, Sol).bins_list.size() << std::endl;
+        Sol = Metaheuristics::WeightAnnealing(P, Sol);
+        end = std::chrono::steady_clock::now();
+        std::cout << "Annealing NFD: " << Sol.bins_list.size() << " Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
         std::cout << "Best solution: " << P.bestSolution << std::endl
                   << "=============================" << std::endl;
     }
